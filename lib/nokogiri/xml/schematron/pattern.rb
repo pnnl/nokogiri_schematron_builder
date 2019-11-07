@@ -10,19 +10,19 @@ module Nokogiri
       #
       # For example:
       #
-      #   pattern = Nokogiri::XML::Schematron::Pattern.new(nil, id: "pattern1", name: "Example pattern")
-      #   # => #<Nokogiri::XML::Schematron::Pattern:0x00007f8486a71f18 @parent=nil, @children=[], @options={:id=>"pattern1", :name=>"Example pattern"}>
+      #   pattern = Nokogiri::XML::Schematron::Pattern.new(nil, id: "pattern1", title: "Example pattern")
+      #   # => #<Nokogiri::XML::Schematron::Pattern:0x00007f8486a71f18 @parent=nil, @children=[], @options={:id=>"pattern1", :title=>"Example pattern"}>
       #   pattern.to_builder.to_xml
-      #   # => "<?xml version=\"1.0\"?>\n<sch:pattern xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" id=\"pattern1\" name=\"Example pattern\"/>\n"
+      #   # => "<?xml version=\"1.0\"?>\n<sch:pattern xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" id=\"pattern1\">\n  <sch:title>Example pattern</sch:title>\n</sch:pattern>\n"
       #
       class Pattern < Nokogiri::XML::Schematron::Base
         # @!attribute [rw] id
         #   @return [String] the value of the +@id+ XML attribute.
         attribute :id
 
-        # @!attribute [rw] name
-        #   @return [String] the value of the +@name+ XML attribute.
-        attribute :name
+        # @!attribute [rw] title
+        #   @return [String] the value of the +@title+ XML element.
+        attribute :title
 
         # @!method context(context, **options, &block)
         #   Create a new +Node::Context+ object.
@@ -132,13 +132,21 @@ module Nokogiri
         protected
 
         def build!(xml)
-          xml["sch"].send(:pattern, %w(id name).inject(xmlns) { |acc, method_name|
+          xml["sch"].send(:pattern, %w(id).inject(xmlns) { |acc, method_name|
             unless (s = send(method_name.to_sym)).nil?
               acc[method_name.to_s] = s
             end
 
             acc
           }) do
+            %w(title).each do |method_name|
+              unless (s = send(method_name.to_sym)).nil?
+                xml["sch"].send(method_name.to_sym, xmlns) do
+                  xml.text(s)
+                end
+              end
+            end
+
             super(xml)
           end
 

@@ -13,7 +13,7 @@ module Nokogiri
       #   schema = Nokogiri::XML::Schematron::Schema.new(id: "schema1", title: "Example schema")
       #   # => #<Nokogiri::XML::Schematron::Schema:0x00007fa1fb9e3b68 @parent=nil, @children=[], @options={:id=>"schema1", :title=>"Example schema"}>
       #   schema.to_builder.to_xml
-      #   # => "<?xml version=\"1.0\"?>\n<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" id=\"schema1\" title=\"Example schema\"/>\n"
+      #   # => "<?xml version=\"1.0\"?>\n<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" id=\"schema1\">\n  <sch:title>Example schema</sch:title>\n</sch:schema>\n"
       #
       class Schema < Nokogiri::XML::Schematron::Base
         # @!attribute [rw] id
@@ -21,7 +21,7 @@ module Nokogiri
         attribute :id
 
         # @!attribute [rw] title
-        #   @return [String] the value of the +@title+ XML attribute.
+        #   @return [String] the value of the +@title+ XML element.
         attribute :title
 
         # @!method ns(**options, &block)
@@ -47,7 +47,7 @@ module Nokogiri
         #   Create a new +Pattern+ object.
         #   @param options [Hash<Symbol, Object>] the options.
         #   @option options [String] :id the value of the +@id+ XML attribute.
-        #   @option options [String] :name the value of the +@name+ XML attribute.
+        #   @option options [String] :title the value of the +@title+ XML element.
         #   @yieldparam pattern [Nokogiri::XML::Schematron::Pattern] the internal representation of the +<sch:pattern>+ XML element.
         #   @yieldreturn [void]
         #   @return [Nokogiri::XML::Schematron::Pattern] the +Pattern+ object.
@@ -57,7 +57,7 @@ module Nokogiri
         #
         # @param options [Hash<Symbol, Object>] the options.
         # @option options [#to_s] :id the value of the +@id+ XML attribute.
-        # @option options [#to_s] :title the value of the +@title+ XML attribute.
+        # @option options [#to_s] :title the value of the +@title+ XML element.
         # @yieldparam schema [Nokogiri::XML::Schematron::Schema] the internal representation of the +<sch:schema>+ XML element.
         # @yieldreturn [void]
         def initialize(**options, &block)
@@ -67,13 +67,21 @@ module Nokogiri
         protected
 
         def build!(xml)
-          xml["sch"].send(:schema, %w(id title).inject(xmlns) { |acc, method_name|
+          xml["sch"].send(:schema, %w(id).inject(xmlns) { |acc, method_name|
             unless (s = send(method_name.to_sym)).nil?
               acc[method_name.to_s] = s
             end
 
             acc
           }) do
+            %w(title).each do |method_name|
+              unless (s = send(method_name.to_sym)).nil?
+                xml["sch"].send(method_name.to_sym, xmlns) do
+                  xml.text(s)
+                end
+              end
+            end
+
             super(xml)
           end
 

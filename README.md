@@ -31,7 +31,7 @@ Create the schema using the domain-specific language:
 ```ruby
 schema = Nokogiri::XML::Schematron::Schema.new(title: "Example schema") do
   ns(prefix: "ex", uri: "http://example.com/ns#")
-  pattern(name: "Example pattern") do
+  pattern(title: "Example pattern") do
     rule(context: "/") do
       assert(test: "count(ex:A) &gt;= 1", message: "element \"ex:A\" is REQUIRED")
     end
@@ -50,7 +50,7 @@ Or, equivalently:
 ```ruby
 schema = Nokogiri::XML::Schematron::Schema.new(title: "Example schema") do
   ns(prefix: "ex", uri: "http://example.com/ns#")
-  pattern(name: "Example pattern") do
+  pattern(title: "Example pattern") do
     context("/") do
       require("ex:A") do
         permit("ex:B") do
@@ -78,9 +78,11 @@ The result is:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" title="Example schema">
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+  <sch:title>Example schema</sch:title>
   <sch:ns prefix="ex" uri="http://example.com/ns#"/>
-  <sch:pattern name="Example pattern">
+  <sch:pattern>
+    <sch:title>Example pattern</sch:title>
     <sch:rule context="/">
       <sch:assert test="count(ex:A) &gt;= 1">element "ex:A" is REQUIRED</sch:assert>
     </sch:rule>
