@@ -56,8 +56,8 @@ module Nokogiri
           #
           # is a descendent of this class, defines methods that are equivalent to:
           #
-          #   def name(*args, &block)
-          #     base = DescendentOfBase.new(self, *args, &block)
+          #   def name(*args, **options, &block)
+          #     base = DescendentOfBase.new(self, *args, **options, &block)
           #     @children << base
           #     base
           #   end
@@ -66,8 +66,8 @@ module Nokogiri
           # @param klass [Class] the class.
           # @return [void]
           def element(name, klass)
-            define_method(name.to_sym) do |*args, &block|
-              base = klass.send(:new, self, *args, &block)
+            define_method(name.to_sym) do |*args, **options, &block|
+              base = klass.send(:new, self, *args, **options, &block)
               instance_variable_get(:@children) << base
               base
             end
@@ -107,8 +107,8 @@ module Nokogiri
         #
         # @return [Nokogiri::XML::Builder]
         # @see https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/XML/Builder#initialize-instance_method
-        def to_builder(*args)
-          ::Nokogiri::XML::Builder.new(*args) do |xml|
+        def to_builder(*args, **options)
+          ::Nokogiri::XML::Builder.new(*args, **options) do |xml|
             build!(xml)
           end
         end

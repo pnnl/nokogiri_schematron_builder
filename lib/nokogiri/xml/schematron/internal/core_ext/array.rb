@@ -13,7 +13,7 @@ module Nokogiri
             # @option options [String] :two_words_connector the sign or word used to join the elements in arrays with two elements.
             # @option options [String] :last_word_connector the sign or word used to join the last element in arrays with three or more elements.
             # @return [String] the comma-separated sentence.
-            def self.to_sentence(array, options = {})
+            def self.to_sentence(array, **options)
               case array.length
               when 0
                 ''

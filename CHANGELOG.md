@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2024-11-07
+
+### Changed
+- Separate positional and keyword arguments (support Ruby 3.0 and higher).
+
 ## [0.1.2] - 2021-08-30
 
 ### Changed
