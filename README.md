@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> This repository has been archived and is no longer maintained.
+> The code is provided for historical reference and may contain unpatched or unknown vulnerabilities.
+> It should not be used in production systems.
+
 # nokogiri_schematron_builder
 
 Build [Schematron](http://schematron.com) XML documents using [Nokogiri](https://nokogiri.org).
